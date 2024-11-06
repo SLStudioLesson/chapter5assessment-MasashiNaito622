@@ -111,9 +111,34 @@ public class TaskLogic {
      * @param loginUser ログインユーザー
      * @throws AppException タスクコードが存在しない、またはステータスが前のステータスより1つ先でない場合にスローされます
      */
-    // public void changeStatus(int code, int status,
-    //                         User loginUser) throws AppException {
-    // }
+    public void changeStatus(int code, int status,
+                            User loginUser) throws AppException {
+        Task task = taskDataAccess.findByCode(code);
+        //入力されたタスクコードが tasks.csvに存在しない場合
+        // スローするときのメッセージは「存在するタスクコードを入力してください」とする
+        if(task==null){
+            throw new AppException("存在するタスクコードを入力してください");
+        }
+        //入力データが前のステータスの入力だった場合
+        //スローするときのメッセージは「ステータスは、前のステータスより1つ先のもののみを選択してください」とする
+        if(!((task.getStatus() == 0 && status == 1||task.getStatus() ==1 && status == 2))){
+            throw new AppException("ステータスは、前のステータスより1つ先のもののみを選択してください");
+        }
+
+        //tasks.csvの該当タスクのステータスを変更後のステータスに更新する
+        task.setStatus(status);
+        taskDataAccess.update(task);
+
+        //logs.csvにデータを1件作成する 変更後のステータス入力
+        // Statusは変更後のステータス
+        // Change_User_Codeは今ログインしてるユーザーコード
+        // Change_Dateは今日の日付
+        Log log = new Log(code, loginUser.getCode(), status, LocalDate.now());
+        logDataAccess.save(log);
+
+        //ステータス変更完了通知
+        System.out.println("ステータスの変更が完了しました。");
+    }
 
     /**
      * タスクを削除します。
