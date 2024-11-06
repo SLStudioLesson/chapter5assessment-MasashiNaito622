@@ -67,9 +67,11 @@ public class TaskUI {
                         taskLogic.showAll(loginUser);
                         //タスク一覧表示後に、ステータス更新機能を選択できるサブメニューを追加する
                         selectSubMenu();
+                        break;
                     case "2":
                         //ログイン後に表示されるメインメニューから選択できるようにすること
                         inputNewInformation();
+                        break;
                     case "3":
                         System.out.println("ログアウトしました。");
                         flg = false;
